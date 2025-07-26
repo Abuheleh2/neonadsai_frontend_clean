@@ -10,8 +10,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Define backend URL (adjust if your backend runs elsewhere)
-  const BACKEND_URL = "https://19hninclo0gg.manus.space"; // Permanent backend URL
+  const BACKEND_URL = "https://19hninclo0gg.manus.space";
 
   const handleGenerateCopy = async () => {
     setLoading(true);
@@ -19,12 +18,31 @@ function App() {
     setVariations([]);
 
     try {
+      const smartPrompt = `
+أريدك أن تتصرف كخبير تسويق رقمي وتقوم بكتابة 3 إعلانات إبداعية وجذابة لنشرها على وسائل التواصل الاجتماعي.
+تفاصيل المنتج/الخدمة:
+${prompt}
+
+يرجى توليد:
+- عنوان جذاب (Headline)
+- وصف موجز (Body)
+- نداء للعمل (Call to Action)
+- الفئة المستهدفة (Target Audience)
+
+صيغة كل إعلان:
+🚀 Ad Copy Variation X:
+Headline: 
+Body:
+Call-to-Action:
+Target:
+      `;
+
       const response = await fetch(`${BACKEND_URL}/api/generate-copy`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: prompt, num_variations: 3 }),
+        body: JSON.stringify({ prompt: smartPrompt, num_variations: 3 }),
       });
 
       const data = await response.json();
@@ -36,7 +54,7 @@ function App() {
       setVariations(data.variations || []);
     } catch (err: any) {
       console.error("Error generating copy:", err);
-      setError(err.message || "An unexpected error occurred.");
+      setError(err.message || "حدث خطأ غير متوقع.");
     } finally {
       setLoading(false);
     }
@@ -54,43 +72,44 @@ function App() {
       </div>
       <h1>NeonAdsAi (Frontend POC)</h1>
       <div className="card">
-        <h2>Generate Ad Copy</h2>
+        <h2>إنشاء إعلان تسويقي ذكي</h2>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter ad prompt (e.g., Product, Target Audience, Key Selling Points)"
-          rows={4}
-          style={{ width: "80%", marginBottom: "10px" }}
+          placeholder="أدخل تفاصيل المنتج أو الخدمة هنا (المنتج، الجمهور، القيمة المضافة)"
+          rows={5}
+          style={{ width: "80%", marginBottom: "10px", direction: "rtl" }}
         />
         <br />
         <Button onClick={handleGenerateCopy} disabled={loading}>
-          {loading ? "Generating..." : "Generate Copy"}
+          {loading ? "جاري التوليد..." : "توليد النص الإعلاني"}
         </Button>
 
         {error && (
-          <div style={{ color: "red", marginTop: "10px" }}>Error: {error}</div>
+          <div style={{ color: "red", marginTop: "10px" }}>خطأ: {error}</div>
         )}
 
         {variations.length > 0 && (
           <div style={{ marginTop: "20px", textAlign: "left" }}>
-            <h3>Generated Variations:</h3>
+            <h3>النصوص الإعلانية المولدة:</h3>
             <ul>
               {variations.map((variation, index) => (
-                <li key={index} style={{ marginBottom: "10px", whiteSpace: "pre-wrap" }}>
+                <li key={index} style={{ marginBottom: "15px", whiteSpace: "pre-wrap" }}>
                   {variation}
                 </li>
               ))}
             </ul>
           </div>
         )}
-
       </div>
+
       <p className="read-the-docs">
-        This is a basic proof-of-concept frontend. Full functionality requires backend API integration and OAuth handling.
+        نسخة تجريبية من NeonAdsAi - يجري العمل على ربط كافة الوظائف الكاملة.
       </p>
     </>
   );
 }
 
 export default App;
+
 
